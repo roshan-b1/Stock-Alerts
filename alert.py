@@ -8,12 +8,12 @@ from email.mime.image import MIMEImage
 from email.mime.text import MIMEText
 import os
 
-# === EMAIL SETUP ===
-EMAIL_ADDRESS = "roshanbharadwaj9@gmail.com"
-EMAIL_PASSWORD = "ixqa lkry piwl mtnb"
-TO_EMAIL = "roshanjb07@gmail.com"
 
-# === RSI FUNCTION (Wilder's smoothing) ===
+EMAIL_ADDRESS = "your email"
+EMAIL_PASSWORD = "16 letter code - your gmail app pass"
+TO_EMAIL = "email to send to"
+
+# rsi using wilder's smoothing
 
 
 def compute_rsi_wilder(data, period=5):
@@ -28,7 +28,7 @@ def compute_rsi_wilder(data, period=5):
     rsi = 100 - (100 / (1 + rs))
     return rsi
 
-# === SEND EMAIL WITH PRICE + CHART ===
+# to send email and chart to email 
 
 
 def send_email_with_chart(subject, body, image_path, price):
@@ -54,13 +54,13 @@ def send_email_with_chart(subject, body, image_path, price):
     except Exception as e:
         print("❌ Failed to send email:", e)
 
-# === MAIN ALERT FUNCTION ===
+# main 
 
 
 def check_amzn():
     df = yf.download("AMZN", period="3mo", interval="1d", progress=False)
 
-    # Fix MultiIndex issue
+  
     if isinstance(df.columns, pd.MultiIndex):
         df.columns = df.columns.get_level_values(0)
 
@@ -68,7 +68,7 @@ def check_amzn():
         print("❌ No 'Close' data found.")
         return
 
-    # Calculate indicators
+  
     df['RSI_5'] = compute_rsi_wilder(df)
     df['SMA_20'] = df['Close'].rolling(window=20).mean()
     df['SMA_50'] = df['Close'].rolling(window=50).mean()
@@ -83,9 +83,9 @@ def check_amzn():
 
     print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Price: ${price:.2f}, RSI(5): {rsi:.2f}")
 
-    # === Alert condition: RSI < 30 and price below SMA 50 ===
+    # alert condition - can change up
     if rsi < 30 and price < sma_50:
-        # Plot chart
+        # Plot 
         fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 6), sharex=True)
         df['Close'].plot(ax=ax1, label="Close", color='black')
         df['SMA_20'].plot(ax=ax1, label="SMA 20")
